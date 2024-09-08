@@ -1,9 +1,5 @@
-import Data from './Data.js';
-
-console.log(Data);
-
-
-const Data2 = [
+// Sample data for company structure
+const data = [
     {
         "id": 1,
         "name": "Company A",
@@ -31,51 +27,73 @@ const Data2 = [
                 ]
             }
         ]
+    },
+    {
+        "id": 6,
+        "name": "Company B",
+        "children": [
+            {
+                "id": 7,
+                "name": "Sales Department",
+                "children": [
+                    {
+                        "id": 8,
+                        "name": "Regional Sales",
+                        "children": [
+                            {
+                                "id": 9,
+                                "name": "Sales Manager 1",
+                                "children": []
+                            },
+                            {
+                                "id": 10,
+                                "name": "Sales Manager 2",
+                                "children": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
     }
 ];
 
+// Recursive function to create the tree structure
+function createTree(parentElement, structure) {
+    const ul = document.createElement('div');
+    ul.className = 'children';
 
-let Maincontainer=document.getElementById("main");
-
-
-
-
-// Updated Driller function to check for 'children' property
-function Driller(node,count) {
-   let counter=0;
-   
-    if (node && typeof node === 'object') {
-
+    structure.forEach(node => {
        
-        // Check if the node has a 'children' property
-        if (node.hasOwnProperty('children')) {
-            console.log("Node with 'children' property found:", node.name);
-            
-            // Recursively process children if they exist and are arrays
-            if (Array.isArray(node.children)) {
-                node.children.forEach(child => Driller(child));
+        const li = document.createElement('div');
+        li.className = 'node';
+
+        const item = document.createElement('div');
+        item.className = node.children.length > 0 ? 'folder' : 'file';
+        item.innerText = node.name;
+
+        // Click to toggle visibility of children
+        item.onclick = function () {
+            const children = li.querySelector('.children');
+            if (children) {
+                children.classList.toggle('hidden');
             }
+        };
+
+        li.appendChild(item);
+
+        // If node has children, recursively create the tree for the children
+        if (node.children.length > 0) {
+            createTree(li, node.children);
         }
 
-        
-    }
+        ul.appendChild(li);
+    });
+
+    console.log(ul);
+    parentElement.appendChild(ul);
 }
 
-// Function to start traversing the array
-function array_traverse(array) {
-    if (Array.isArray(array)) {
-        // array.forEach(item => Driller(item));
-
-        for(let count=0; count<array.length; count++){
-            Driller(array[count],count);
-        }
-    } else {
-        console.log("The provided input is not an array.");
-    }
-}
-
-// Call the function with Data2
-array_traverse(Data);
-
-
-
+// Initial call to create the tree structureā
+const treeContainer = document.getElementById('treeContainer');
+createTree(treeContainer, data);
